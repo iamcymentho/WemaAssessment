@@ -17,7 +17,7 @@ namespace CustomerOnboarding.Services.Services.Implementations
         private readonly ICustomerOtpService _otpService;
         private readonly IValidationHelper _validationHelper;
         private readonly IMapper _mapper;
-        // In-memory cache for temporary customer data  
+
         private static readonly ConcurrentDictionary<string, CustomerDto> _customerCache = new();
 
         public CustomerService(ICustomerRepository customerRepository,
@@ -42,11 +42,11 @@ namespace CustomerOnboarding.Services.Services.Implementations
             // Validate State and LGA Mapping  
             if (!await _customerRepository.IsValidStateAndLGAAsync(customerDto.State, customerDto.LGA))
                  return new Result { Success = false, Message = "Invalid state and LGA combination." };
-                
-            // Check if customer already exists  
+
+            // Checking if customer already exists  
             var existingCustomer = await _customerRepository.GetByPhoneNumberAsync(customerDto.PhoneNumber);
-            if (existingCustomer != null) 
-                 return new Result { Success = false, Message = "Customer already exists." }; ;
+            if (existingCustomer != null)
+                return new Result { Success = false, Message = "Customer already exists." }; ;
 
             // Generate and send OTP  
             string otpSent =  _otpService.GenerateOtp(customerDto.PhoneNumber);
@@ -58,7 +58,7 @@ namespace CustomerOnboarding.Services.Services.Implementations
             // Cache the customer DTO during the onboarding process  
             _customerCache[customerDto.PhoneNumber] = customerDto;
 
-            return new Result { Success = true, Message = "OTP sent successfully." };
+            return new Result { Success = true, Message = "OTP sent successfully.", Data = otpSent };
         }
 
         public async Task<Result> VerifyOtpAndCompleteOnboardingAsync(string phoneNumber, string otp)
@@ -75,15 +75,14 @@ namespace CustomerOnboarding.Services.Services.Implementations
             {
                 return new Result { Success = false, Message = "Customer data not found." };
             }
-
-            // Map CustomerDto to Customer  
+ 
             var newCustomer = _mapper.Map<Customer>(customerDto);
             newCustomer.IsVerified = true;
             newCustomer.PasswordHash = BCrypt.Net.BCrypt.HashPassword(customerDto.Password); // Set the PasswordHash  
 
             await _customerRepository.AddCustomerAsync(newCustomer);
 
-            // Optionally, remove the DTO from the cache after processing  
+            // remove the DTO from the cache after processing  
             _customerCache.TryRemove(phoneNumber, out _);
 
             return new Result { Success = true, Message = "Customer onboarded successfully." };

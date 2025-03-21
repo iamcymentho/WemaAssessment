@@ -4,16 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CustomerOnboarding.Domain.Common
+namespace CustomerOnboarding.Domain.Entities
 {
-    public class Result
+    public class OnboardingResponse
     {
-        public bool Success { get; set; }
         public string Message { get; set; }
-
-        public string Data { get; set; }
+        public string Otp { get; set; } // OTP field
     }
 
-
-}  
-
+}

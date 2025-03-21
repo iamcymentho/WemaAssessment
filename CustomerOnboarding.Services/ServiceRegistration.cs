@@ -19,9 +19,10 @@ public static class ServiceRegistration
     public static IServiceCollection AddServiceDependencies(this IServiceCollection services, IConfiguration configuration)
     {
 
-        // Automatically registers all validators in the application layer
+       
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddLogging();
+        services.AddMemoryCache();
 
 
         services.AddAutoMapper(typeof(MappingProfile));
@@ -30,7 +31,6 @@ public static class ServiceRegistration
         services.AddScoped<IBankMiddlewareService, BankMiddlewareService>();
         services.AddScoped<ICustomerOtpService, CustomerOtpService>();
 
-        //services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         services.AddScoped<IValidator<CustomerDto>, CustomerValidator>();
 
          
