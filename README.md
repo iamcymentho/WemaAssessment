@@ -8,7 +8,7 @@
 # RESPONSE
 ![image](https://github.com/user-attachments/assets/8ff8c5c5-b434-413a-9e68-57d90b1f31e5)
 
-# VERIFY - OTP
+# VERIFY - OTP & COMPLETE ONBOARDING
 ![image](https://github.com/user-attachments/assets/b31d5075-90d5-40f8-afb3-e417c5a5f9cc)
 
 # RESPONSE - FOR RIGHT OTP
