@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen(
     }
 );
 builder.AddConfiguration();
+builder.Services.AddMemoryCache();
 builder.Services.AddDataDependencies(builder.Configuration);
 builder.Services.AddServiceDependencies(builder.Configuration);
 

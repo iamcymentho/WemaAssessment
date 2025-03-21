@@ -1,6 +1,6 @@
 ﻿using CustomerOnboarding.Domain.DataTransferObjects;
+using CustomerOnboarding.Domain.Entities;
 using CustomerOnboarding.Services.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerOnboarding.Api.Controllers.V1
@@ -17,8 +17,7 @@ namespace CustomerOnboarding.Api.Controllers.V1
             _customerService = customerService;
             _bankMiddlewareService = bankMiddlewareService;
         }
-
-        // Step 1: Onboard Customer (generate OTP)  
+ 
         [HttpPost("wema-Bank/v1/initiate-onboarding")]
         public async Task<IActionResult> OnboardCustomer([FromBody] CustomerDto customerDto)
         {
@@ -28,10 +27,15 @@ namespace CustomerOnboarding.Api.Controllers.V1
                 return BadRequest(result.Message);
             }
 
-            return Ok("OTP sent to your phone number. Please verify.");
+            var onboardingResponse = new OnboardingResponse
+            {
+                Message = "OTP sent to your phone number. Please verify.",
+                Otp = result.Data 
+            };
+
+            return Ok(onboardingResponse);
         }
 
-        // Step 2: Verify OTP  
         [HttpPost("wema-bank/v1/verify-otp")]
         public async Task<IActionResult> VerifyOtp([FromQuery] string phoneNumber, [FromQuery] string otp)
         {
@@ -50,7 +54,6 @@ namespace CustomerOnboarding.Api.Controllers.V1
         {
             var result = await _customerService.GetAllCustomersAsync();
 
-            // Check if the result is successful
             if (result == null || !result.Any())
             {
                 return NotFound("No customers found.");
